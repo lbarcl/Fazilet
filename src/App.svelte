@@ -199,7 +199,7 @@
 
                         <div class="absolute bottom-0 left-0 right-16 p-5">
                             <div class="text-sm font-semibold text-white/90">
-                                @anne-hanım
+                                @anne-kadın
                             </div>
                             <h2
                                 class="mt-2 text-2xl font-bold capitalize tracking-tight"
