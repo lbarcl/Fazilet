@@ -254,9 +254,6 @@
                         </p>
                     </div>
                 {/if}
-                <p class="mt-2 break-all text-xs text-zinc-500">
-                    Gun peer: {GUN_PEERS[0]}
-                </p>
             </header>
 
             <CommentPanel {comments} bind:draft onSubmit={submitComment} />
