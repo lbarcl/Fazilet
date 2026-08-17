@@ -41,9 +41,6 @@
     const activeState = $derived(
         activePhoto ? readState(activePhoto.id) : undefined,
     );
-    const likeCount = $derived(
-        activeState ? Object.keys(activeState.likes).length : 0,
-    );
     const comments = $derived(
         activeState
             ? Object.values(activeState.comments).sort(
@@ -51,12 +48,23 @@
               )
             : [],
     );
-    const liked = $derived(
-        activeState ? Boolean(activeState.likes[viewerId]) : false,
-    );
 
     function readState(photoId: string) {
         return states[photoId] ?? emptyReelState;
+    }
+
+    function readComments(photoId: string) {
+        return Object.values(readState(photoId).comments).sort(
+            (a, b) => b.createdAt - a.createdAt,
+        );
+    }
+
+    function readLikeCount(photoId: string) {
+        return Object.keys(readState(photoId).likes).length;
+    }
+
+    function readLiked(photoId: string) {
+        return Boolean(readState(photoId).likes[viewerId]);
     }
 
     function ensureState(photoId: string) {
@@ -129,13 +137,16 @@
         if (event.key === "Escape") commentOpen = false;
     }
 
-    function toggleLike() {
-        if (!activePhoto) return;
-
-        reelNode(activePhoto)
+    function toggleLike(photo: ReelPhoto) {
+        reelNode(photo)
             .get("likes")
             .get(viewerId)
-            .put(liked ? null : true);
+            .put(readLiked(photo.id) ? null : true);
+    }
+
+    function openComments(index: number) {
+        setActive(index);
+        commentOpen = true;
     }
 
     function submitComment() {
@@ -191,6 +202,8 @@
                             class="h-full w-full object-cover"
                             src={photo.src}
                             alt={photo.name}
+                            loading="lazy"
+                            decoding="async"
                             draggable="false"
                         />
                         <div
@@ -213,11 +226,11 @@
                         </div>
 
                         <ReelActions
-                            {liked}
-                            {likeCount}
-                            commentCount={comments.length}
-                            onToggleLike={toggleLike}
-                            onOpenComments={() => (commentOpen = true)}
+                            liked={readLiked(photo.id)}
+                            likeCount={readLikeCount(photo.id)}
+                            commentCount={readComments(photo.id).length}
+                            onToggleLike={() => toggleLike(photo)}
+                            onOpenComments={() => openComments(index)}
                         />
                     </article>
                 {/each}
